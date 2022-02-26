@@ -15,7 +15,7 @@
 //
 // Revision: 
 // Revision 0.01 - File Created
-// Additional Comments: 
+// Additional Comments: top module
 //
 //////////////////////////////////////////////////////////////////////////////////
 module Num24(clk, JA, btnr, btnl, red, green, blue, hsync, vsync);
