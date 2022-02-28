@@ -26,7 +26,7 @@ module valid_sets(index, num1, num2, num3, num4);
 	output wire [3:0]	num2;
 	output wire [3:0] num3;
 	output wire [3:0] num4;
-	always @(*) begin
+	always @(index) begin
 		case(index)
 			4'b0000: begin
 				num1 = 2; num2 = 4; num3 = 8; num4 = 11;
