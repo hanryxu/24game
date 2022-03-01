@@ -5,9 +5,9 @@ module screen(sx, sy, numbers_concat, vga_r, vga_g, vga_b);
     input [47:0] numbers_concat; // 12 numbers to display, each with 4 bits
     // number 0123456789 is stored as
     // 0000 0001 0010 0011 0100 0101 0110 0111 1000 1001
-    output reg [2:0] vga_r;  // 3-bit VGA red
-    output reg [2:0] vga_g;  // 3-bit VGA green
-    output reg [1:0] vga_b;   // 2-bit VGA blue
+    output [2:0] vga_r;  // 3-bit VGA red
+    output [2:0] vga_g;  // 3-bit VGA green
+    output [1:0] vga_b;   // 2-bit VGA blue
 
     // based on sx and sy coordinates, determine which number to display
     wire [3:0] number;
@@ -21,7 +21,11 @@ module screen(sx, sy, numbers_concat, vga_r, vga_g, vga_b);
 
     seven_segment_sim seven_segment_sim_INS(.sx_offset(sx_offset), .sy_offset(sy_offset), .number(number), .if_display(if_display));
 
+    // based on if_display and color (not specified yet), determine pixel color
 
+    assign vga_r = if_display ? 3'b1 : 3'b0;
+    assign vga_g = if_display ? 3'b1 : 3'b0;
+    assign vga_b = if_display ? 2'b1 : 2'b0;
 endmodule
 
 module number_to_display(numbers_concat, sx, sy, number, sx_offset, sy_offset);
