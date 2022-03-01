@@ -7,7 +7,7 @@ module vga_tb();
     reg rst;
     reg clk_100m;
 
-    // clk_100m, rst, vga_hsync, vga_vsync, vga_red, vga_green, vga_blue
+    reg [47:0] numbers_concat;
 
     wire hsync, vsync;
     wire [2:0] red;
@@ -22,6 +22,7 @@ module vga_tb();
     initial begin
         rst = 1;
         clk_100m = 1;
+        numbers_concat=47'b0000_0001_0010_0011_0100_0101_0110_0111_1000_1001_1010_1011;
 
         #100 rst = 0;
         #20_000_000 $finish;  // 18 ms (one frame is 16.7 ms)
