@@ -23,9 +23,9 @@ module screen(sx, sy, numbers_concat, vga_r, vga_g, vga_b);
 
     // based on if_display and color (not specified yet), determine pixel color
 
-    assign vga_r = if_display ? 3'b1 : 3'b0;
-    assign vga_g = if_display ? 3'b1 : 3'b0;
-    assign vga_b = if_display ? 2'b1 : 2'b0;
+    assign vga_r = if_display ? 3'b111 : 3'b0;
+    assign vga_g = if_display ? 3'b111 : 3'b0;
+    assign vga_b = if_display ? 2'b11 : 2'b0;
 endmodule
 
 module number_to_display(numbers_concat, sx, sy, number, sx_offset, sy_offset);
