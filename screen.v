@@ -18,6 +18,10 @@ module screen(sx, sy, numbers_concat, vga_r, vga_g, vga_b);
     // based on number and the two offsets, determine whether to display pixel
 
     wire if_display;
+
+    seven_segment_sim seven_segment_sim_INS(.sx_offset(sx_offset), .sy_offset(sy_offset), .number(number), .if_display(if_display));
+
+
 endmodule
 
 module number_to_display(numbers_concat, sx, sy, number, sx_offset, sy_offset);
@@ -103,14 +107,3 @@ module number_to_display(numbers_concat, sx, sy, number, sx_offset, sy_offset);
     assign sx_offset = sx_offset_reg;
     assign sy_offset = sy_offset_reg;
 endmodule
-
-module illuminate(sx_offset, sy_offset, number, if_display);
-    input [9:0] sx_offset, sy_offset;
-    input [3:0] number;
-    output if_display;
-
-    // based on sx and sy coordinates, determine which number to display
-    wire [3:0] number;
-    wire [9:0] sx_offset, sy_offset;
-
-    illuminate_number illuminate_number_INS(.sx_offset(sx_offset), .sy_offset(sy_offset), .number(number), .vga_r(vga_r), .vga_g(vga_g), .vga_b(vga_b));
