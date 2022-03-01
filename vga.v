@@ -29,39 +29,8 @@ module vga (clk_100m, rst, vga_hsync, vga_vsync, vga_r, vga_g, vga_b);
                     .de(de)
                 );
 
-    // size of screen with and without blanking
-    /* verilator lint_off UNUSED */
-    localparam H_RES_FULL = 800;
-    localparam V_RES_FULL = 525;
-    localparam H_RES      = 640;
-    localparam V_RES      = 480;
-    /* verilator lint_on UNUSED */
-
-    wire animate;  // high for one clock tick at start of vertical blanking
-    assign animate = (sy == V_RES && sx == 0);
-
-    // square 'Q' - origin at top-left
-    localparam Q_SIZE = 32;    // square size in pixels
-    localparam Q_SPEED = 4;    // pixels moved per frame
-    reg [9:0] qx;
-	reg [9:0] qy;  // square position
-
-    // update square position once per frame
-    always @(posedge clk_pix) begin
-        if (animate) begin
-            if (qx >= H_RES_FULL - Q_SIZE) begin
-                qx <= 0;
-                qy <= (qy >= V_RES_FULL - Q_SIZE) ? 0 : qy + Q_SIZE;
-            end else begin
-                qx <= qx + Q_SPEED;
-            end
-        end
-    end
-
-    // is square at current screen position?
-    wire q_draw;
-
-    assign q_draw = (sx >= qx) && (sx < qx + Q_SIZE) && (sy >= qy) && (sy < qy + Q_SIZE);
+    // based on sx and sy coordinates, determine which number to display
+    // we have a total of 12 numbers
 
     // VGA output
     always @(posedge clk_pix) begin
