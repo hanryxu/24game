@@ -9,6 +9,7 @@ module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, v
     output reg [2:0] vga_g;  // 3-bit VGA green
     output reg [1:0] vga_b;  // 2-bit VGA blue
 
+    // wire [47:0] numbers_concat=47'b0000_0001_0010_0011_0100_0101_0110_0111_1000_1001_1010_1011; // for testing vga only
     // generate pixel clock
     wire clk_pix;
     clock_gen_480p clock_pix_inst (
