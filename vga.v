@@ -1,15 +1,15 @@
 // output 640x480
-module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, vga_b);
+module vga (clk_100m, rst, vga_hsync, vga_vsync, vga_r, vga_g, vga_b);
     input  clk_100m;     // 100 MHz clock
     input  rst;      // reset button (active low)
-    input [47:0] numbers_concat;
+    // input [47:0] numbers_concat;
     output reg vga_hsync;    // horizontal sync
     output reg vga_vsync;    // vertical sync
     output reg [2:0] vga_r;  // 3-bit VGA red
     output reg [2:0] vga_g;  // 3-bit VGA green
     output reg [1:0] vga_b;  // 2-bit VGA blue
 
-    // wire [47:0] numbers_concat=47'b0000_0001_0010_0011_0100_0101_0110_0111_1000_1001_1010_1011; // for testing vga only
+    wire [47:0] numbers_concat=47'b0000_0001_0010_0011_0100_0101_0110_0111_1000_1001_1010_1011; // for testing vga only
     // generate pixel clock
     wire clk_pix;
     clock_gen_480p clock_pix_inst (

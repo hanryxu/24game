@@ -14,7 +14,7 @@ module vga_tb();
     wire [2:0] green;
     wire [1:0] blue;
 
-    vga vga_INS(.clk_100m(clk_100m), .rst(rst), .numbers_concat(numbers_concat), .vga_hsync(hsync), .vga_vsync(vsync), .vga_r(red), .vga_g(green), .vga_b(blue));
+    vga vga_INS(.clk_100m(clk_100m), .rst(rst), .vga_hsync(hsync), .vga_vsync(vsync), .vga_r(red), .vga_g(green), .vga_b(blue));
 
     // generate clock
     always #(CLK_PERIOD / 2) clk_100m = ~clk_100m;
