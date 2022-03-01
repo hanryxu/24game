@@ -18,19 +18,18 @@
 // Additional Comments: See link below for credits
 // https://vlsicoding.blogspot.com/2014/07/verilog-code-for-4-bit-linear-feedback-shift-register.html
 //////////////////////////////////////////////////////////////////////////////////
-module psuedo_rand(clk, rst, out);
-	output reg [3:0] out;
+module psuedo_rand(clk, rst, enable, out);
+	output reg [3:0] out = 4'b0;
 	input clk, rst;
 
 	wire feedback;
 
 	assign feedback = ~(out[3] ^ out[2]);
+	reg enabled = 0;
 	
 	always @(posedge clk, posedge rst)
 	begin
-		if (rst)
-			out = 4'b0;
-		else
+		if (enable) // only update if enabled to do so
 			out = {out[2:0],feedback};
 	end
 
