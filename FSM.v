@@ -41,6 +41,8 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 	valid_sets valid_set(.index(index), .n1(m1), .n2(m2), .n3(m3), .n4(m4));
 	
 	// assign wire and an internal register for state, which should be 3 initially
+	// I'll eliminate this, and replace w/ a 4 bit string
+	reg [3:0] valid = 4'b0000;
 	assign how_many = (state == 3'b100) ? 0 : state;
 	reg [1:0] in1; reg [1:0] in2; reg [1:0] op; // in1 is 0 if num1, etc. + = 0, - = 1, * = 2, / = 3
 	reg update2 = 0; // 1 if updating in2, 0 if updating in1
@@ -50,16 +52,19 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 	always @(posedge clk) begin
 		if (START) begin
 			state = 3'b111; // state R
+			valid = 4'b0000;
 		end else if (RESTART) begin
 			if (state == 3'b111) begin
 				state = 3'b111;
+				valid = 4'b0000;
 			end else begin
 				state = 3'b011;
+				valid = 4'b1111;
 			end
 		end else begin
 			case (decode)
 				4'b0001: begin // 1
-					if (how_many >= 1) begin // if n1 can be selected for operating
+					if (valid[0] == 1) begin // if n1 can be selected for operating
 						if (update2) begin
 							in2 = 2'b00;
 							update2 = 0;
@@ -72,7 +77,7 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 					end
 				end
 				4'b0010: begin // 2
-					if (how_many >= 1) begin // if n2 can be selected for operating
+					if (valid[1] == 1) begin // if n2 can be selected for operating
 						if (update2) begin
 							in2 = 2'b01;
 							update2 = 0;
@@ -85,7 +90,7 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 					end
 				end
 				4'b0011: begin // 3
-					if (how_many >= 2) begin // if n3 can be selected for operating
+					if (valid[2] == 1) begin // if n3 can be selected for operating
 						if (update2) begin
 							in2 = 2'b10;
 							update2 = 0;
@@ -98,7 +103,7 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 					end
 				end
 				4'b0100: begin // 4
-					if (how_many >= 3) begin // if n4 can be selected for operating
+					if (valid[3] == 1) begin // if n4 can be selected for operating
 						if (update2) begin
 							in2 = 2'b11;
 							update2 = 0;
@@ -143,7 +148,7 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 				proceed = 0;
 				opReady = 0;
 				update2 = 0;
-				// Perform op, put result in result, this is hard
+				// Perform op, put result in one of the ops
 				case (op)
 					2'b00: begin
 					end
@@ -159,6 +164,8 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 		// assign num1, num2, num3, num4 to corr m if state == R
 		if (state == 3'b111) begin
 			num1 = m1; num2 = m2; num3 = m3; num4 = m4;
+			state = 3'b011;
+			valid = 4'b1111;
 		end
 	end
 endmodule
