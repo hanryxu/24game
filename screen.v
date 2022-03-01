@@ -34,62 +34,62 @@ module number_to_display(numbers_concat, sx, sy, number, sx_offset, sy_offset);
     reg [9:0] sx_offset_reg, sy_offset_reg;
     always @(*) begin
         case (1)
-            (sx>=20 && sx<=100 && sy>=20 && sy<=160) : begin
+            (sx>=20 && sx<100 && sy>=20 && sy<160) : begin
                 the_number[3:0] <= numbers_concat[47:44];
                 sx_offset_reg <= sx - 20;
                 sy_offset_reg <= sy - 20;
             end
-            (sx>=120 && sx<=200 && sy>=20 && sy<=160) : begin
+            (sx>=120 && sx<200 && sy>=20 && sy<160) : begin
                 the_number <= numbers_concat[43:40];
                 sx_offset_reg <= sx - 120;
                 sy_offset_reg <= sy - 20;
             end
-            (sx>=220 && sx<=300 && sy>=20 && sy<=160) : begin
+            (sx>=220 && sx<300 && sy>=20 && sy<160) : begin
                 the_number <= numbers_concat[39:36];
                 sx_offset_reg <= sx - 220;
                 sy_offset_reg <= sy - 20;
             end
-            (sx>=340 && sx<=420 && sy>=20 && sy<=160) : begin
+            (sx>=340 && sx<420 && sy>=20 && sy<160) : begin
                 the_number <= numbers_concat[35:32];
                 sx_offset_reg <= sx - 340;
                 sy_offset_reg <= sy - 20;
             end
-            (sx>=440 && sx<=520 && sy>=20 && sy<=160) : begin
+            (sx>=440 && sx<520 && sy>=20 && sy<160) : begin
                 the_number <= numbers_concat[31:28];
                 sx_offset_reg <= sx - 440;
                 sy_offset_reg <= sy - 20;
             end
-            (sx>=540 && sx<=620 && sy>=20 && sy<=160) : begin
+            (sx>=540 && sx<620 && sy>=20 && sy<160) : begin
                 the_number <= numbers_concat[27:24];
                 sx_offset_reg <= sx - 540;
                 sy_offset_reg <= sy - 20;
             end
-            (sx>=20 && sx<=100 && sy>=200 && sy<=340) : begin
+            (sx>=20 && sx<100 && sy>=200 && sy<340) : begin
                 the_number <= numbers_concat[23:20];
                 sx_offset_reg <= sx - 20;
                 sy_offset_reg <= sy - 200;
             end
-            (sx>=120 && sx<=200 && sy>=200 && sy<=340) : begin
+            (sx>=120 && sx<200 && sy>=200 && sy<340) : begin
                 the_number <= numbers_concat[19:16];
                 sx_offset_reg <= sx - 120;
                 sy_offset_reg <= sy - 200;
             end
-            (sx>=220 && sx<=300 && sy>=200 && sy<=340) : begin
+            (sx>=220 && sx<300 && sy>=200 && sy<340) : begin
                 the_number <= numbers_concat[15:12];
                 sx_offset_reg <= sx - 220;
                 sy_offset_reg <= sy - 200;
             end
-            (sx>=340 && sx<=420 && sy>=200 && sy<=340) : begin
+            (sx>=340 && sx<420 && sy>=200 && sy<340) : begin
                 the_number <= numbers_concat[11:8];
                 sx_offset_reg <= sx - 340;
                 sy_offset_reg <= sy - 200;
             end
-            (sx>=440 && sx<=520 && sy>=200 && sy<=340) : begin
+            (sx>=440 && sx<520 && sy>=200 && sy<340) : begin
                 the_number <= numbers_concat[7:4];
                 sx_offset_reg <= sx - 440;
                 sy_offset_reg <= sy - 200;
             end
-            (sx>=540 && sx<=620 && sy>=200 && sy<=340) : begin
+            (sx>=540 && sx<620 && sy>=200 && sy<340) : begin
                 the_number <= numbers_concat[3:0];
                 sx_offset_reg <= sx - 540;
                 sy_offset_reg <= sy - 200;
