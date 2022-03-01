@@ -44,7 +44,8 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 	assign how_many = (state == 3'b100) ? 0 : state;
 	reg [1:0] in1; reg [1:0] in2; reg [1:0] op; // in1 is 0 if num1, etc. + = 0, - = 1, * = 2, / = 3
 	reg update2 = 0; // 1 if updating in2, 0 if updating in1
-	reg opReady = 0; // 1 if ready to perform operation w/ valid inputs
+	reg opReady = 0; // 1 if ready to select operator for operation
+	reg proceed = 0; // 1 if ready to proceed w/ operation
 	always @(posedge clk) begin
 		if (START) begin
 			state = 3'b111; // state R
@@ -105,16 +106,28 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 				end
 			end
 			4'b1010: begin // A = add
-				
+				if (opReady) begin
+					op = 2'b00;
+					proceed = 1;
+				end
 			end
 			4'b1011: begin // B = subtract
-			
+				if (opReady) begin
+					op = 2'b01;
+					proceed = 1;
+				end
 			end
 			4'b1100: begin // C = divide
-			
+				if (opReady) begin
+					op = 2'b10;
+					proceed = 1;
+				end
 			end
 			4'b1101: begin // D = multiply
-			
+				if (opReady) begin
+					op = 2'b11;
+					proceed = 1;
+				end
 			end
 			default: begin
 			
