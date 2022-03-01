@@ -38,7 +38,7 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 	wire enable;
 	assign enable = (state == 3'b111);
 	psuedo_rand rand_index(.clk(clk), .rst(rst), .enable(enable), .out(index));
-	valid_sets valid_set(.index(index), .num1(m1), .num2(m2), .num3(m3), .num4(m4));
+	valid_sets valid_set(.index(index), .n1(m1), .n2(m2), .n3(m3), .n4(m4));
 	
 	// assign wire and an internal register for state, which should be 3 initially
 	assign how_many = (state == 3'b100) ? 0 : state;
@@ -46,6 +46,7 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 	reg update2 = 0; // 1 if updating in2, 0 if updating in1
 	reg opReady = 0; // 1 if ready to select operator for operation
 	reg proceed = 0; // 1 if ready to proceed w/ operation
+	reg [9:0] result = 0; // result of the operation
 	always @(posedge clk) begin
 		if (START) begin
 			state = 3'b111; // state R
@@ -55,83 +56,109 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
 			end else begin
 				state = 3'b011;
 			end
+		end else begin
+			case (decode)
+				4'b0001: begin // 1
+					if (how_many >= 1) begin // if n1 can be selected for operating
+						if (update2) begin
+							in2 = 2'b00;
+							update2 = 0;
+							opReady = 1;
+						end else begin
+							in1 = 2'b00;
+							update2 = 1;
+							opReady = 0; // can't be ready if in2 isn't chosen
+						end
+					end
+				end
+				4'b0010: begin // 2
+					if (how_many >= 1) begin // if n2 can be selected for operating
+						if (update2) begin
+							in2 = 2'b01;
+							update2 = 0;
+							opReady = 1;
+						end else begin
+							in1 = 2'b01;
+							update2 = 1;
+							opReady = 0;
+						end
+					end
+				end
+				4'b0011: begin // 3
+					if (how_many >= 2) begin // if n3 can be selected for operating
+						if (update2) begin
+							in2 = 2'b10;
+							update2 = 0;
+							opReady = 1;
+						end else begin
+							in1 = 2'b10;
+							update2 = 1;
+							opReady = 0;
+						end
+					end
+				end
+				4'b0100: begin // 4
+					if (how_many >= 3) begin // if n4 can be selected for operating
+						if (update2) begin
+							in2 = 2'b11;
+							update2 = 0;
+							opReady = 1;
+						end else begin
+							in1 = 2'b11;
+							update2 = 1;
+							opReady = 0;
+						end
+					end
+				end
+				4'b1010: begin // A = add
+					if (opReady) begin
+						op = 2'b00;
+						proceed = 1;
+					end
+				end
+				4'b1011: begin // B = subtract
+					if (opReady) begin
+						op = 2'b01;
+						proceed = 1;
+					end
+				end
+				4'b1100: begin // C = divide
+					if (opReady) begin
+						op = 2'b10;
+						proceed = 1;
+					end
+				end
+				4'b1101: begin // D = multiply
+					if (opReady) begin
+						op = 2'b11;
+						proceed = 1;
+					end
+				end
+				default: begin // do nothing
+				end
+			endcase
+			// now proceed w/ the operation, if it's ready
+			if (proceed) begin
+				// reset all booleans to false
+				proceed = 0;
+				opReady = 0;
+				update2 = 0;
+				// Perform op, put result in result, this is hard
+				case (op)
+					2'b00: begin
+					end
+					2'b01: begin
+					end
+					2'b10: begin
+					end
+					2'b11: begin
+					end
+				endcase
+			end
 		end
-		case (decode)
-			4'b0001: begin // 1
-				if (how_many >= 1) begin // if n1 can be selected for operating
-					if (update2) begin
-						in2 = 2'b00;
-						update2 = 0;
-						opReady = 1;
-					end else begin
-						in1 = 2'b00;
-						update2 = 1;
-					end
-				end
-			end
-			4'b0010: begin // 2
-				if (how_many >= 1) begin // if n2 can be selected for operating
-					if (update2) begin
-						in2 = 2'b01;
-						update2 = 0;
-						opReady = 1;
-					end else begin
-						in1 = 2'b01;
-						update2 = 1;
-					end
-				end
-			end
-			4'b0011: begin // 3
-				if (how_many >= 2) begin // if n3 can be selected for operating
-					if (update2) begin
-						in2 = 2'b10;
-						update2 = 0;
-						opReady = 1;
-					end else begin
-						in1 = 2'b10;
-						update2 = 1;
-					end
-				end
-			end
-			4'b0100: begin // 4
-				if (how_many >= 3) begin // if n4 can be selected for operating
-					if (update2) begin
-						in2 = 2'b11;
-						update2 = 0;
-						opReady = 1;
-					end else begin
-						in1 = 2'b11;
-						update2 = 1;
-					end
-				end
-			end
-			4'b1010: begin // A = add
-				if (opReady) begin
-					op = 2'b00;
-					proceed = 1;
-				end
-			end
-			4'b1011: begin // B = subtract
-				if (opReady) begin
-					op = 2'b01;
-					proceed = 1;
-				end
-			end
-			4'b1100: begin // C = divide
-				if (opReady) begin
-					op = 2'b10;
-					proceed = 1;
-				end
-			end
-			4'b1101: begin // D = multiply
-				if (opReady) begin
-					op = 2'b11;
-					proceed = 1;
-				end
-			end
-			default: begin
-			
-			end
-		endcase
+		// assign num1, num2, num3, num4 to corr m if state == R
+		if (state == 3'b111) begin
+			num1 = m1; num2 = m2; num3 = m3; num4 = m4;
+		end
 	end
 endmodule
