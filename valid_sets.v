@@ -22,10 +22,10 @@
 
 module valid_sets(index, num1, num2, num3, num4);
 	input wire [3:0] index;
-	output wire [9:0] num1;
-	output wire [9:0]	num2;
-	output wire [9:0] num3;
-	output wire [9:0] num4;
+	output reg [9:0] num1;
+	output reg [9:0]	num2;
+	output reg [9:0] num3;
+	output reg [9:0] num4;
 	always @(index) begin
 		case(index)
 			4'b0000: begin

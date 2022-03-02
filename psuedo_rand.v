@@ -21,13 +21,17 @@
 module psuedo_rand(clk, rst, enable, out);
 	output reg [3:0] out = 4'b0;
 	input clk, rst;
+	input enable;
 
 	wire feedback;
 
 	assign feedback = ~(out[3] ^ out[2]);
 	reg enabled = 0;
+	// hack to avoid synthesis error due to assigning under multiple edges'
+	wire hack;
+   assign hack= clk | rst;
 	
-	always @(posedge clk, posedge rst)
+	always @(hack)
 	begin
 		if (enable) // only update if enabled to do so
 			out = {out[2:0],feedback};
