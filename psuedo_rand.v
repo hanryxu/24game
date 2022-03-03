@@ -28,6 +28,8 @@ module psuedo_rand(clk, rst, enable, out);
     assign out=register;
 
     always @(clk) begin
+        if (rst)
+            register <= 4'b1010;
         if (enable) // only update if enabled to do so
             register <= {register[2:0], ~(register[3] ^ register[2])};
     end

@@ -1,7 +1,9 @@
-module FSM(clk, START, RESTART, decode, num1, num2, num3, num4);
+module FSM(clk, rst, START, RESTART, decode, num1, num2, num3, num4, valid_output);
     input clk, START, RESTART; // START = new game
+	input rst;	// rst: reset random number generator
     input [3:0] decode;
     output [9:0] num1, num2, num3, num4;
+	output [3:0] valid_output;
 
     wire [3:0] index;
     reg enable=1;
@@ -21,7 +23,6 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4);
     wire [9:0] cal_num1, cal_num2;
     wire [9:0] result_add, result_sub, result_mul, result_div;
     wire [9:0] result;
-    wire rst;
     reg win;
     reg lose;
 
@@ -29,9 +30,9 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4);
     assign num2=num[1];
     assign num3=num[2];
     assign num4=num[3];
+	assign valid_output=valid;
 
     assign signal={START, RESTART, decode};
-    assign rst=START||RESTART;
 
     assign select_smaller = select_1 < select_2 ? select_1 : select_2;
     assign select_larger = select_1 > select_2 ? select_1 : select_2;

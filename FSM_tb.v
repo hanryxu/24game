@@ -6,6 +6,7 @@ module FSM_tb();
     end
     wire [9:0] num1, num2, num3, num4;
     reg clk;
+    reg rst;
     reg START, RESTART;
     reg [3:0] decode;
 
@@ -15,13 +16,15 @@ module FSM_tb();
 
     assign c=a/b;
 
-    FSM FSM_INS(.clk(clk), .START(START), .RESTART(RESTART), .decode(decode), .num1(num1), .num2(num2), .num3(num3), .num4(num4));
+    FSM FSM_INS(.clk(clk), .rst(rst), .START(START), .RESTART(RESTART), .decode(decode), .num1(num1), .num2(num2), .num3(num3), .num4(num4));
 
     initial begin
         clk=0;
         START=0;
         RESTART=0;
         decode=4'b0000;
+        // #50 rst = 1;
+        // #50 rst = 0;
         #100 START = 1;
         // 3 4 8 13
         #400 START = 0;
