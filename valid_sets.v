@@ -29,7 +29,7 @@ module valid_sets(index, num1, num2, num3, num4);
 	always @(index) begin
 		case(index)
 			4'b0000: begin
-				num1 = 2; num2 = 4; num3 = 8; num4 = 11;
+				num1 = 2; num2 = 4; num3 = 8; num4 = 10;
 			end
 			4'b0001: begin
 				num1 = 2; num2 = 6; num3 = 12; num4 = 13;

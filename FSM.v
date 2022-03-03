@@ -1,259 +1,162 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: Joyce Tung
-// 
-// Create Date:    00:20:25 02/26/2022 
-// Design Name: 
-// Module Name:    FSM 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: Given the decoded inputs from the numberpad,
-//					 START/RESTART buttons, output the four numbers displayed,
-//					 how many are valid, or win/lose. Also responsible for updating
-//					 numbers as the user acts.
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+module FSM(clk, START, RESTART, decode, num1, num2, num3, num4);
+    input clk, START, RESTART; // START = new game
+    input [3:0] decode;
+    output [9:0] num1, num2, num3, num4;
 
-module FSM(clk, START, RESTART, decode, num1, num2, num3, num4, how_many, win);
-	input clk, START, RESTART; // START = new game
-	input [3:0] decode;
-	output reg[9:0] num1; output reg[9:0] num2; output reg[9:0] num3; output reg[9:0] num4;
-	wire [9:0] m1; wire [9:0] m2; wire [9:0] m3; wire [9:0] m4;
-	output wire [1:0] how_many; // if 1 number is left, how_many == 00, and num is num1
-	output wire win; // 1 if win, 0 otherwise (lose/not finished)
-	
-	assign win = (how_many == 0 && result == 24);
-	
-	// initialize num1, num2, num3, num4
-	wire rst;
-	reg [2:0] state; //discard initialization so code will synthesize 
-	assign rst = (state == 3'b111); // only on if state is R
-	wire [3:0] index;
-	reg [7:0] result; //store the current result of all operations so far
-	wire enable;
-	assign enable = (state == 3'b111);
-	psuedo_rand rand_index(.clk(clk), .rst(rst), .enable(enable), .out(index));
-	valid_sets valid_set(.index(index), .num1(m1), .num2(m2), .num3(m3), .num4(m4));
-	
-	// assign wire and an internal register for state, which should be 3 initially
-	// I'll eliminate this, and replace w/ a 4 bit string
-	reg [3:0] valid = 4'b0000;
-	assign how_many = (state == 3'b100) ? 0 : state;
-	reg [9:0] in1; reg [9:0] in2; reg [1:0] op; // in1 stores num1 if 0, etc. + = 0, - = 1, * = 2, / = 3
-	reg update2 = 0; // 1 if updating in2, 0 if updating in1
-	reg opReady = 0; // 1 if ready to select operator for operation
-	reg proceed = 0; // 1 if ready to proceed w/ operation
-	always @(posedge clk) begin
-		if (START) begin
-			state <= 3'b111; // state R
-			valid = 4'b0000;
-		end else if (RESTART) begin
-			if (state == 3'b111) begin
-				state <= 3'b111;
-				valid = 4'b0000;
-			end else begin
-				state <= 3'b011;
-				valid = 4'b1111;
-			end
-		 end
-		// assign num1, num2, num3, num4 to corr m if state == R
-		else if (state == 3'b111) begin
-			num1 = m1; num2 = m2; num3 = m3; num4 = m4;
-			state <= 3'b011;
-			valid = 4'b1111;
-		end
-		else if (state == 3'b11) begin
-			case (decode)
-				4'b0001: begin // 1
-					if (valid[0] == 1) begin // if n1 can be selected for operating
-						if (update2) begin
-							in2 = num1;
-							update2 = 0;
-							opReady = 1;
-						end else begin
-							in1 = num1;
-							update2 = 1;
-							opReady = 0; // can't be ready if in2 isn't chosen
-						end
-						valid[0] = 0;
-					end
-				end
-				4'b0010: begin // 2
-					if (valid[1] == 1) begin // if n2 can be selected for operating
-						if (update2) begin
-							in2 = num2;
-							update2 = 0;
-							opReady = 1;
-						end else begin
-							in1 = num2;
-							update2 = 1;
-							opReady = 0;
-						end
-						valid[1] = 0;
-					end
-				end
-				4'b0011: begin // 3
-					if (valid[2] == 1) begin // if n3 can be selected for operating
-						if (update2) begin
-							in2 = num3;
-							update2 = 0;
-							opReady = 1;
-						end else begin
-							in1 = num3;
-							update2 = 1;
-							opReady = 0;
-						end
-						valid[2] = 0;
-					end
-				end
-				4'b0100: begin // 4
-					if (valid[3] == 1) begin // if n4 can be selected for operating
-						if (update2) begin
-							in2 = num4;
-							update2 = 0;
-							opReady = 1;
-						end else begin
-							in1 = num4;
-							update2 = 1;
-							opReady = 0;
-						end
-						valid[3] = 0;
-					end
-				end
-				4'b1010: begin // A = add
-					if (opReady) begin
-						op = 2'b00;
-						proceed = 1;
-					end
-				end
-				4'b1011: begin // B = subtract
-					if (opReady) begin
-						op = 2'b01;
-						proceed = 1;
-					end
-				end
-				4'b1100: begin // C = divide
-					if (opReady) begin
-						op = 2'b10;
-						proceed = 1;
-					end
-				end
-				4'b1101: begin // D = multiply
-					if (opReady) begin
-						op = 2'b11;
-						proceed = 1;
-					end
-				end
-				default: begin // do nothing
-				end
-			 endcase
-		end
-		else begin
-		    case (decode)
-				4'b0001: begin // 1
-					if (valid[0] == 1) begin // if n1 can be selected for operating
-						in1 = num1;
-						opReady = 1;
-						valid[0] = 0;
-					end
-				end
-				4'b0010: begin // 2
-					if (valid[1] == 1) begin // if n2 can be selected for operating
-						in1 = num2;
-						opReady = 1;
-						valid[1] = 0;
-					end
-				end
-				4'b0011: begin // 3
-					if (valid[2] == 1) begin // if n3 can be selected for operating
-							in1 = num3;
-							opReady = 1;
-						valid[2] = 0;
-					end
-				end
-				4'b0100: begin // 4
-					if (valid[3] == 1) begin // if n4 can be selected for operating
-					  in1 = num3;
-					  valid[3] = 0;
-				   end
-				end
-				4'b1010: begin // A = add
-					if (opReady) begin
-						op = 2'b00;
-						proceed = 1;
-					end
-				end
-				4'b1011: begin // B = subtract
-					if (opReady) begin
-						op = 2'b01;
-						proceed = 1;
-					end
-				end
-				4'b1100: begin // C = divide
-					if (opReady) begin
-						op = 2'b10;
-						proceed = 1;
-					end
-				end
-				4'b1101: begin // D = multiply
-					if (opReady) begin
-						op = 2'b11;
-						proceed = 1;
-					end
-				end
-				default: begin // do nothing
-				end
-			 endcase
-		end
-			// now proceed w/ the operation, if it's ready
-			if (proceed) begin
-				// reset all booleans to false
-				proceed = 0;
-				opReady = 0;
-				update2 = 0;
-				// Perform op, put result in one of the ops
-				case (op)
-					3'b00: begin
-					  if (state == 3'b11) begin
-					    result = in1 + in2;
-					  end
-					  else begin
-					    result = result + in1;
-					  end
-					end
-					3'b01: begin
-					  if (state == 3'b11) begin
-					    result = in1 - in2;
-					  end
-					  else begin
-					    result = result - in1;
-					  end
-					end
-					3'b10: begin
-					  if (state == 3'b11) begin
-					    result = in1 * in2;
-					  end
-					  else begin
-					    result = result * in1;
-					  end
-					end
-					3'b11: begin
-					  if (state == 3'b11) begin
-					    result = in1 / in2;
-					  end
-					  else begin
-					    result = result / in1;
-					  end
-					end
-				endcase
-				state <= state - 1;
-			end
-		end
+    wire [3:0] index;
+    reg [9:0] num[0:3];
+    reg [3:0] valid;
+    reg [9:0] num1_old, num2_old, num3_old, num4_old;
+    wire [9:0] m1, m2, m3, m4;
+    wire [5:0] signal;
+    reg [5:0] last_signal;
+    reg [2:0] state;
+    reg [3:0] last_state;
+    reg [1:0] select_1;
+    reg [1:0] select_2;
+    wire [1:0] select_smaller;
+    wire [1:0] select_larger;
+    reg [1:0] op;
+    wire [9:0] cal_num1, cal_num2;
+    wire [9:0] result_add, result_sub, result_mul, result_div;
+    wire [9:0] result;
+    wire rst;
+    reg win;
+    reg lose;
+
+    assign num1=num[0];
+    assign num2=num[1];
+    assign num3=num[2];
+    assign num4=num[3];
+
+    assign signal={START, RESTART, decode};
+    assign rst=START||RESTART;
+
+    assign select_smaller = select_1 < select_2 ? select_1 : select_2;
+    assign select_larger = select_1 > select_2 ? select_1 : select_2;
+
+    assign cal_num1 = num[select_1];
+    assign cal_num2 = num[select_2];
+
+    assign result_add=cal_num1+cal_num2;
+    assign result_sub=cal_num1-cal_num2;
+    assign result_mul=cal_num1*cal_num2;
+    assign result_div=cal_num1/cal_num2;
+
+    assign result=(op==2'b00 ? result_add : (op==2'b01 ? result_sub : (op==2'b10 ? result_mul : result_div)));
+
+    psuedo_rand rand_index(.clk(clk), .rst(rst), .enable(enable), .out(index));
+    valid_sets valid_set(.index(index), .num1(m1), .num2(m2), .num3(m3), .num4(m4));
+
+    always @(posedge clk) begin
+        last_signal<=signal;
+        if(last_signal==signal) begin
+        end else
+        begin
+            if(valid==4'b1000) begin
+            end else begin
+                if((START==0&&last_signal[5]==1)||(RESTART==0&&last_signal[4]==1)||decode==0&&last_signal[3:0]!=0) begin
+                end
+                else
+                begin
+                    if(START==1&&last_signal[5]==0) begin
+                        state <= 3'b000;
+                        num[0] <= m1;
+                        num[1] <= m2;
+                        num[2] <= m3;
+                        num[3] <= m4;
+                        num1_old <= m1;
+                        num2_old <= m2;
+                        num3_old <= m3;
+                        num4_old <= m4;
+                        valid <= 4'b1111;
+                    end else
+                    begin
+                        if(RESTART==1&&last_signal[4]==0) begin
+                            state <= 3'b000;
+                            num[0] <= num1_old;
+                            num[1] <= num2_old;
+                            num[2] <= num3_old;
+                            num[3] <= num4_old;
+                            valid <= 4'b1111;
+                        end
+                        else
+                        begin if(valid==4'b1000) begin
+                                if(num[0]==24) begin
+                                    win <= 1;
+                                end
+                                else begin
+                                    lose <= 1;
+                                end
+                            end
+                            else
+                            begin
+                                case(state)
+                                    3'b000: begin
+                                        if(decode<=4'b0100) begin
+                                            select_1[1:0] <= decode[1:0]-1;
+                                            state<=3'b100;
+                                        end else begin
+                                            op[1:0]=decode-4'b1010;
+                                            state<=3'b001;
+                                        end
+                                    end
+                                    3'b001: begin
+                                        if(decode<=4'b0100) begin
+                                            select_1[1:0] <= decode[1:0]-1;
+                                            state<=3'b101;
+                                        end else begin
+                                            op[1:0]=decode-4'b1010;
+                                            state<=3'b001;
+                                        end
+                                    end
+                                    3'b100: begin
+                                        if(decode<=4'b0100) begin
+                                            select_2[1:0] <= decode[1:0]-1;
+                                            state<=3'b110;
+                                        end else begin
+                                            op[1:0]=decode-4'b1010;
+                                            state<=3'b101;
+                                        end
+                                    end
+                                    3'b101: begin
+                                        if(decode<=4'b0100) begin
+                                            select_2[1:0] <= decode[1:0]-1;
+                                            state<=3'b111;
+                                        end else begin
+                                            op[1:0]=decode-4'b1010;
+                                            state<=3'b101;
+                                        end
+                                    end
+                                    3'b110: begin
+                                        if(decode<=4'b0100) begin
+                                            select_1[1:0] <= decode[1:0]-1;
+                                            state<=3'b100;
+                                        end else begin
+                                            op[1:0]=decode-4'b1010;
+                                            state<=3'b111;
+                                        end
+                                    end
+                                    3'b111: begin
+                                        num[select_smaller] <= result;
+                                        valid[select_larger] <= 1'b0;
+                                        if(decode<=4'b0100) begin
+                                            select_1[1:0] <= decode[1:0]-1;
+                                            state<=3'b100;
+                                        end else begin
+                                            op[1:0]=decode-4'b1010;
+                                            state<=3'b001;
+                                        end
+                                    end
+                                    default: begin
+                                        state <= 3'b000;
+                                    end
+                                endcase
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
 endmodule
