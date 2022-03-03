@@ -1,40 +1,35 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
+// Company:
 // Engineer:
-// 
-// Create Date:    07:14:00 02/27/2022 
-// Design Name: 
-// Module Name:    psuedo_rand 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
+//
+// Create Date:    07:14:00 02/27/2022
+// Design Name:
+// Module Name:    psuedo_rand
+// Project Name:
+// Target Devices:
+// Tool versions:
 // Description: Generates a psuedo random 4 bit number.
 //						If it doesn't work, it'll get scrapped and I'll cycle through sets in order
-// Dependencies: 
+// Dependencies:
 //
-// Revision: 
+// Revision:
 // Revision 0.01 - File Created
 // Additional Comments: See link below for credits
 // https://vlsicoding.blogspot.com/2014/07/verilog-code-for-4-bit-linear-feedback-shift-register.html
 //////////////////////////////////////////////////////////////////////////////////
 module psuedo_rand(clk, rst, enable, out);
-	output reg [3:0] out = 4'b0;
-	input clk, rst;
-	input enable;
+    input clk, rst;
+    input enable;
+    output [3:0] out;
 
-	wire feedback;
+    reg [3:0] register=4'b1010;
 
-	assign feedback = ~(out[3] ^ out[2]);
-	reg enabled = 0;
-	// hack to avoid synthesis error due to assigning under multiple edges'
-	wire hack;
-   assign hack= clk | rst;
-	
-	always @(hack)
-	begin
-		if (enable) // only update if enabled to do so
-			out = {out[2:0],feedback};
-	end
+    assign out=register;
+
+    always @(clk) begin
+        if (enable) // only update if enabled to do so
+            register <= {register[2:0], ~(register[3] ^ register[2])};
+    end
 
 endmodule

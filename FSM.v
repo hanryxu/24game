@@ -4,6 +4,7 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4);
     output [9:0] num1, num2, num3, num4;
 
     wire [3:0] index;
+    reg enable=1;
     reg [9:0] num[0:3];
     reg [3:0] valid;
     reg [9:0] num1_old, num2_old, num3_old, num4_old;
@@ -55,7 +56,7 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4);
         begin
             if(valid==4'b1000) begin
             end else begin
-                if((START==0&&last_signal[5]==1)||(RESTART==0&&last_signal[4]==1)||decode==0&&last_signal[3:0]!=0) begin
+                if((START==0&&last_signal[5]==1)||(RESTART==0&&last_signal[4]==1)) begin
                 end
                 else
                 begin
@@ -93,60 +94,64 @@ module FSM(clk, START, RESTART, decode, num1, num2, num3, num4);
                             begin
                                 case(state)
                                     3'b000: begin
-                                        if(decode<=4'b0100) begin
+                                        if(decode>=4'b0001 && decode<=4'b0100) begin
                                             select_1[1:0] <= decode[1:0]-1;
                                             state<=3'b100;
-                                        end else begin
-                                            op[1:0]=decode-4'b1010;
-                                            state<=3'b001;
+                                        end else begin if(decode>=4'b1010&& decode<=4'b1101) begin
+                                                op[1:0]<=decode-4'b1010;
+                                                state<=3'b001;
+                                            end else begin
+                                            end
                                         end
                                     end
                                     3'b001: begin
-                                        if(decode<=4'b0100) begin
+                                        if(decode>=4'b0001 && decode<=4'b0100) begin
                                             select_1[1:0] <= decode[1:0]-1;
                                             state<=3'b101;
-                                        end else begin
-                                            op[1:0]=decode-4'b1010;
-                                            state<=3'b001;
+                                        end else begin if(decode>=4'b1010&& decode<=4'b1101) begin
+                                                op[1:0]<=decode-4'b1010;
+                                                state<=3'b001;
+                                            end else begin
+                                            end
                                         end
                                     end
                                     3'b100: begin
-                                        if(decode<=4'b0100) begin
+                                        if(decode>=4'b0001 && decode<=4'b0100) begin
                                             select_2[1:0] <= decode[1:0]-1;
                                             state<=3'b110;
-                                        end else begin
-                                            op[1:0]=decode-4'b1010;
-                                            state<=3'b101;
+                                        end else begin if(decode>=4'b1010&& decode<=4'b1101) begin
+                                                op[1:0]<=decode-4'b1010;
+                                                state<=3'b101;
+                                            end else begin
+                                            end
                                         end
                                     end
                                     3'b101: begin
-                                        if(decode<=4'b0100) begin
+                                        if(decode>=4'b0001 && decode<=4'b0100) begin
                                             select_2[1:0] <= decode[1:0]-1;
                                             state<=3'b111;
-                                        end else begin
-                                            op[1:0]=decode-4'b1010;
-                                            state<=3'b101;
+                                        end else begin if(decode>=4'b1010&& decode<=4'b1101) begin
+                                                op[1:0]<=decode-4'b1010;
+                                                state<=3'b101;
+                                            end else begin
+                                            end
                                         end
                                     end
                                     3'b110: begin
-                                        if(decode<=4'b0100) begin
+                                        if(decode>=4'b0001 && decode<=4'b0100) begin
                                             select_1[1:0] <= decode[1:0]-1;
                                             state<=3'b100;
-                                        end else begin
-                                            op[1:0]=decode-4'b1010;
-                                            state<=3'b111;
+                                        end else begin if(decode>=4'b1010&& decode<=4'b1101) begin
+                                                op[1:0]<=decode-4'b1010;
+                                                state<=3'b111;
+                                            end else begin
+                                            end
                                         end
                                     end
                                     3'b111: begin
                                         num[select_smaller] <= result;
                                         valid[select_larger] <= 1'b0;
-                                        if(decode<=4'b0100) begin
-                                            select_1[1:0] <= decode[1:0]-1;
-                                            state<=3'b100;
-                                        end else begin
-                                            op[1:0]=decode-4'b1010;
-                                            state<=3'b001;
-                                        end
+                                        state <= 3'b000;
                                     end
                                     default: begin
                                         state <= 3'b000;
