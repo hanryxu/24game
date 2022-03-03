@@ -1,8 +1,9 @@
 // output 640x480
-module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, vga_b);
+module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, vga_b, sel1, sel2);
     input  clk_100m;     // 100 MHz clock
     input  rst;      // reset button (active low)
     input [47:0] numbers_concat;
+    input [1:0] sel1, sel2;
     output reg vga_hsync;    // horizontal sync
     output reg vga_vsync;    // vertical sync
     output reg [2:0] vga_r;  // 3-bit VGA red
