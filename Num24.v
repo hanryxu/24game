@@ -21,7 +21,7 @@
 module Num24(clk, rst, JA, START, RESTART, red, green, blue, hsync, vsync);
     // User controls
     input clk;
-	input rst;
+    input rst;
     input [7:0] JA;
     input START, RESTART;
     // VGA stuff
@@ -49,10 +49,16 @@ module Num24(clk, rst, JA, START, RESTART, red, green, blue, hsync, vsync);
     debouncer debounce_RESTART(.clk_in(clk_debounce), .but(RESTART),
                                .but_out(RESTART_d));
 
+    reg enable=1;
+    wire [3:0] index;
+    wire [9:0] m1, m2, m3, m4;
+    psuedo_rand rand_index(.clk(clk), .rst(rst), .enable(enable), .out(index));
+    valid_sets valid_set(.index(index), .num1(m1), .num2(m2), .num3(m3), .num4(m4));
+
     // FSM
     wire [9:0] num1, num2, num3, num4;
     wire [3:0] valid;
-    FSM FSM_INS(.clk(clk), .START(START_d), .RESTART(RESTART_d), .decode(decode), .num1(num1), .num2(num2), .num3(num3), .num4(num4), .valid_output(valid));
+    FSM FSM_INS(.clk(clk), .rst(rst), .START(START_d), .RESTART(RESTART_d), .decode(decode), .m1(m1), .m2(m2), .m3(m3), .m4(m4), .num1(num1), .num2(num2), .num3(num3), .num4(num4), .valid_output(valid));
 
     wire [47:0] numbers;
     number_converter number_converter_INS(.num1(num1), .num2(num2), .num3(num3), .num4(num4), .valid(valid), .numbers(numbers));

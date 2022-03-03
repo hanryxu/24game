@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 module clock_gen(
         clk_in,
-        clk_debounce,
+        clk_debounce
     );
     input clk_in;
     output reg clk_debounce=0;
@@ -24,9 +24,8 @@ module clock_gen(
 endmodule
 
 // generate 25MHz clock from 100MHz clock on board
-module clock_gen_display(clk, rst, clk_pix);
+module clock_gen_display(clk, clk_pix);
     input clk;
-    input rst;
     output clk_pix;
 
     reg clk_display=0;

@@ -14,7 +14,6 @@ module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, v
     wire clk_pix;
     clock_gen_display clock_pix_inst (
                           .clk(clk_100m),
-                          .rst(rst),
                           .clk_pix(clk_pix)
                       );
 

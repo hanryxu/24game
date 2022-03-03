@@ -1,16 +1,15 @@
-module FSM(clk, rst, START, RESTART, decode, num1, num2, num3, num4, valid_output);
+module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, num4, valid_output);
     input clk, START, RESTART; // START = new game
 	input rst;	// rst: reset random number generator
     input [3:0] decode;
+    input [9:0] m1, m2, m3, m4;
     output [9:0] num1, num2, num3, num4;
 	output [3:0] valid_output;
 
     wire [3:0] index;
-    reg enable=1;
     reg [9:0] num[0:3];
     reg [3:0] valid;
     reg [9:0] num1_old, num2_old, num3_old, num4_old;
-    wire [9:0] m1, m2, m3, m4;
     wire [5:0] signal;
     reg [5:0] last_signal;
     reg [2:0] state;
@@ -47,9 +46,6 @@ module FSM(clk, rst, START, RESTART, decode, num1, num2, num3, num4, valid_outpu
 
     assign result=(op==2'b00 ? result_add : (op==2'b01 ? result_sub : (op==2'b10 ? result_mul : result_div)));
 
-    psuedo_rand rand_index(.clk(clk), .rst(rst), .enable(enable), .out(index));
-    valid_sets valid_set(.index(index), .num1(m1), .num2(m2), .num3(m3), .num4(m4));
-
     always @(posedge clk) begin
         last_signal<=signal;
         if(last_signal==signal) begin
@@ -67,19 +63,19 @@ module FSM(clk, rst, START, RESTART, decode, num1, num2, num3, num4, valid_outpu
                         num[1] <= m2;
                         num[2] <= m3;
                         num[3] <= m4;
-                        num1_old <= m1;
-                        num2_old <= m2;
-                        num3_old <= m3;
-                        num4_old <= m4;
+                        num1_old[9:0] <= m1[9:0];
+                        num2_old[9:0] <= m2[9:0];
+                        num3_old[9:0] <= m3[9:0];
+                        num4_old[9:0] <= m4[9:0];
                         valid <= 4'b1111;
                     end else
                     begin
                         if(RESTART==1&&last_signal[4]==0) begin
                             state <= 3'b000;
-                            num[0] <= num1_old;
-                            num[1] <= num2_old;
-                            num[2] <= num3_old;
-                            num[3] <= num4_old;
+                            num[0][9:0] <= num1_old[9:0];
+                            num[1][9:0] <= num2_old[9:0];
+                            num[2][9:0] <= num3_old[9:0];
+                            num[3][9:0] <= num4_old[9:0];
                             valid <= 4'b1111;
                         end
                         else

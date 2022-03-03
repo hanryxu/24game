@@ -27,7 +27,7 @@ module psuedo_rand(clk, rst, enable, out);
 
     assign out=register;
 
-    always @(clk) begin
+    always @(posedge clk) begin
         if (rst)
             register <= 4'b1010;
         if (enable) // only update if enabled to do so
