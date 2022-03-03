@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module PmodKYPD( clk, JA, Decode);
 	input clk;					// 100Mhz onboard clock
-	inout [7:0] JA;			// Port JA on Nexys3, JA[3:0] is Columns, JA[7:4] is rows
+	input [7:0] JA;			// Port JA on Nexys3, JA[3:0] is Columns, JA[7:4] is rows
 
 	output wire [3:0] Decode;
 

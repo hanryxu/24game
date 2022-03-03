@@ -1,23 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company:
-// Engineer:
-//
-// Create Date:    02:39:29 02/02/2022
-// Design Name:
-// Module Name:    clock_gen
-// Project Name:
-// Target Devices:
-// Tool versions:
-// Description:
-//
-// Dependencies:
-//
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-//
-//////////////////////////////////////////////////////////////////////////////////
 module clock_gen(
         clk_in,
         clk_debounce,
@@ -40,4 +21,23 @@ module clock_gen(
             counter_debounce <= counter_debounce + 1'b1;
     end
 
+endmodule
+
+// generate 25MHz clock from 100MHz clock on board
+module clock_gen_display(clk, rst, clk_pix);
+    input clk;
+    input rst;
+    output clk_pix;
+
+    reg clk_display=0;
+    reg [1:0] counter=0;
+    always @(posedge clk) begin
+        counter <= counter + 1;
+        if (counter == 1) begin
+            counter <= 0;
+            clk_display = ~clk_display;
+        end
+    end
+
+    assign clk_pix = clk_display;
 endmodule

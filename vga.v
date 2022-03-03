@@ -12,11 +12,11 @@ module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, v
     // wire [47:0] numbers_concat=47'b0000_0001_0010_0011_0100_0101_0110_0111_1000_1001_1010_1011; // for testing vga only
     // generate pixel clock
     wire clk_pix;
-    clock_gen_480p clock_pix_inst (
-                       .clk(clk_100m),
-                       .rst(rst),
-                       .clk_pix(clk_pix)
-                   );
+    clock_gen_display clock_pix_inst (
+                          .clk(clk_100m),
+                          .rst(rst),
+                          .clk_pix(clk_pix)
+                      );
 
     // display sync signals and coordinates
     wire [9:0] sx, sy;
