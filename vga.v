@@ -1,9 +1,9 @@
 // output 640x480
-module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, vga_b, sel1, sel2);
+module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, vga_b, s1, s2);
     input  clk_100m;     // 100 MHz clock
     input  rst;      // reset button (active low)
     input [47:0] numbers_concat;
-    input [1:0] sel1, sel2;
+	 input [2:0] s1, s2;
     output reg vga_hsync;    // horizontal sync
     output reg vga_vsync;    // vertical sync
     output reg [2:0] vga_r;  // 3-bit VGA red
@@ -37,7 +37,7 @@ module vga (clk_100m, rst, numbers_concat, vga_hsync, vga_vsync, vga_r, vga_g, v
     wire [1:0] vga_b_wire;
 
     // based on sx and sy coordinates, determine rgb values using `screen`
-    screen screen_INS(.sx(sx), .sy(sy), .numbers_concat(numbers_concat), .vga_r(vga_r_wire), .vga_g(vga_g_wire), .vga_b(vga_b_wire));
+    screen screen_INS(.sx(sx), .sy(sy), .numbers_concat(numbers_concat), .vga_r(vga_r_wire), .vga_g(vga_g_wire), .vga_b(vga_b_wire), .s1(s1), .s2(s2));
 
     // VGA output
     always @(posedge clk_pix) begin

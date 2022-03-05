@@ -1,3 +1,4 @@
+// add parameters if_select
 module seven_segment_sim(sx_offset, sy_offset, number, if_display);
     input [9:0] sx_offset, sy_offset;
     input [3:0] number;

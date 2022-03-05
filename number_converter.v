@@ -59,16 +59,16 @@ module number_converter(num1, num2, num3, num4, valid, numbers);
     assign num4_d2 = (num4/10)%10;
     assign num4_d3 = (num4)%10;
 
-    assign numbers [11:0] = (valid[0] == 1) ?
+    assign numbers[47:36] = (valid[0] == 1) ?
            {num1_d1, num1_d2, num1_d3}
            : {12{1'b1}};
-    assign numbers [23:12] = (valid[1] == 1) ?
+    assign numbers[35:24] = (valid[1] == 1) ?
            {num2_d1, num2_d2, num2_d3}
            : {12{1'b1}};
-    assign numbers [35:24] = (valid[2] == 1) ?
+    assign numbers[23:12] = (valid[2] == 1) ?
            {num3_d1, num3_d2, num3_d3}
            : {12{1'b1}};
-    assign numbers [47:36] = (valid[3] == 1) ?
+    assign numbers[11:0] = (valid[3] == 1) ?
            {num4_d1, num4_d2, num4_d3}
            : {12{1'b1}};
 endmodule
