@@ -1,4 +1,4 @@
-module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, num4, valid_output, select_1, selct_2);
+module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, num4, valid_output, select_1, select_2);
     input clk, START, RESTART; // START = new game
 	input rst;	// rst: reset random number generator
     input [3:0] decode;
