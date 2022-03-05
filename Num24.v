@@ -60,7 +60,7 @@ module Num24(clk, rst, JA, START, RESTART, red, green, blue, hsync, vsync);
     wire [3:0] valid;
     wire [1:0] s1, s2;
     FSM FSM_INS(.clk(clk), .rst(rst), .START(START_d), .RESTART(RESTART_d), .decode(decode), .m1(m1), .m2(m2), .m3(m3), .m4(m4), .num1(num1), .num2(num2), .num3(num3), .num4(num4), .valid_output(valid)
-                , select_1(s1), select_2(s2));
+                , .select_1(s1), .select_2(s2));
 
     wire [47:0] numbers;
     number_converter number_converter_INS(.num1(num1), .num2(num2), .num3(num3), .num4(num4), .valid(valid), .numbers(numbers));
