@@ -1,4 +1,4 @@
-module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, num4, valid_output, s1, s2);
+module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, num4, valid_output, s1, s2, win, lose);
     input clk, START, RESTART; // START = new game
 	input rst;	// rst: reset random number generator
     input [3:0] decode;
@@ -18,7 +18,7 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
     reg [5:0] last_signal;
     reg [2:0] state;
     reg [3:0] last_state;
-    reg [1:0] select_1; 
+    reg [1:0] select_1; // 00 if num1, num[0], valid bit [0]
 	 // wire [1:0] select_1_i;	// work around about wrong selection
     reg [1:0] select_2;
 	 // wire [1:0] select_2_i;
@@ -28,8 +28,11 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
     wire [9:0] cal_num1, cal_num2;
     wire [9:0] result_add, result_sub, result_mul, result_div;
     wire [9:0] result;
-    reg win;
-    reg lose;
+    output wire win;
+    output wire lose;
+
+	 assign win = (valid == 4'b0001 && num[0] == 24) ? 1 : 0;
+	 assign lose = (valid == 4'b0001 && num[0] != 24) ? 1 : 0;
 
     assign num1=num[0];
     assign num2=num[1];
@@ -63,14 +66,7 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
         if(last_signal==signal) begin
         end else
         begin
-            if(valid==4'b1000) begin
-					if(num[0]==24) begin
-						win <= 1;
-				   end else begin
-						lose <= 1;
-				   end
-            end else begin
-					  if(START==1) begin
+            if(START==1) begin
 							state <= 3'b000;
 							num[0] <= m1;
 							num[1] <= m2;
@@ -93,7 +89,7 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
 							end else begin
 								case(state) // b2 b1 b0, b0 = operator selected, b1 = operand2, b2 = operand1
 									3'b000: begin
-										 if (decode>=4'b0001 && decode<=4'b0100) begin
+										 if (decode>=4'b0001 && decode<=4'b0100 && (valid[decode - 1] == 1'b1)) begin
 											  select_1 <= decode - 1;
 											  state<=3'b100;
 										 end else begin 
@@ -105,7 +101,7 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
 										 end
 									end
 									3'b001: begin
-										 if(decode>=4'b0001 && decode<=4'b0100) begin
+										 if(decode>=4'b0001 && decode<=4'b0100 && (valid[decode - 1] == 1'b1)) begin
 											  select_1 <= decode - 1;
 											  state<=3'b101;
 										 end else begin if(decode>=4'b1010&& decode<=4'b1101) begin
@@ -116,7 +112,7 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
 										 end
 									end
 									3'b100: begin
-										 if(decode>=4'b0001 && decode<=4'b0100) begin
+										 if(decode>=4'b0001 && decode<=4'b0100 && (valid[decode - 1] == 1'b1)) begin
 											  select_2 <= decode - 1;
 											  state<=3'b110;
 										 end else begin if(decode>=4'b1010&& decode<=4'b1101) begin
@@ -127,7 +123,7 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
 										 end
 									end
 									3'b101: begin
-										 if(decode>=4'b0001 && decode<=4'b0100) begin
+										 if(decode>=4'b0001 && decode<=4'b0100 && (valid[decode - 1] == 1'b1)) begin
 											  select_2 <= decode - 1;
 											  state<=3'b111;
 										 end else begin 
@@ -139,7 +135,7 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
 										 end
 									end
 									3'b110: begin
-										 if(decode>=4'b0001 && decode<=4'b0100) begin // override select1, clear select2
+										 if(decode>=4'b0001 && decode<=4'b0100 && (valid[decode - 1] == 1'b1)) begin // override select1, clear select2
 											  select_1 <= decode - 1;
 											  state<=3'b100;
 										 end else begin if(decode>=4'b1010&& decode<=4'b1101) begin
@@ -158,8 +154,7 @@ module FSM(clk, rst, START, RESTART, decode, m1, m2, m3, m4, num1, num2, num3, n
 										 state <= 3'b000;
 									end
 							  endcase
-							end
-					  end
+					   end
 				 end
 			end
     end

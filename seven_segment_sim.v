@@ -24,9 +24,13 @@ module seven_segment_sim(sx_offset, sy_offset, number, if_display);
     assign if_7 = if_a || if_b || if_c;
     assign if_8 = if_a || if_b || if_c || if_d || if_e || if_f || if_g;
     assign if_9 = if_a || if_b || if_c || if_d || if_f || if_g;
+	 
+	 assign if_FAIL = if_a || if_f || if_g || if_e;
+	 assign if_SUCCESS = if_5;
 
     assign if_display = (number == 0 && if_0) || (number == 1 && if_1) || (number == 2 && if_2)
            || (number == 3 && if_3) || (number == 4 && if_4) || (number == 5 && if_5)
            || (number == 6 && if_6) || (number == 7 && if_7) || (number == 8 && if_8)
-           || (number == 9 && if_9);
+           || (number == 9 && if_9)
+			  || (number == 10 && if_FAIL) || (number == 11 && if_SUCCESS);
 endmodule
