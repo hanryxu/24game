@@ -14,7 +14,7 @@ module Num24_tb();
     Num24(clk, rst, JA, START, RESTART, red, green, blue, hsync, vsync);
 
     initial begin
-		// seems that it's hard to simulate JA, so I give up here
-		// please see vga_tb.v for screen simulation, and FSM_tb.v for game simulation
+        // seems that it's hard to simulate JA, so I give up here
+        // please see vga_tb.v for screen simulation, and FSM_tb.v for game simulation
     end
 endmodule

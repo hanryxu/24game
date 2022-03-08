@@ -50,7 +50,7 @@ module Num24(clk, rst, JA, START, RESTART, red, green, blue, hsync, vsync);
                                .but_out(RESTART_d));
 
     wire enable;
-	 assign enable = START_d;
+    assign enable = START_d;
     wire [3:0] index;
     wire [9:0] m1, m2, m3, m4;
     psuedo_rand rand_index(.clk(clk), .rst(rst), .enable(enable), .out(index));
@@ -59,16 +59,16 @@ module Num24(clk, rst, JA, START, RESTART, red, green, blue, hsync, vsync);
     // FSM
     wire [9:0] num1, num2, num3, num4;
     wire [3:0] valid;
-	 wire [2:0] sel1;
-	 wire [2:0] sel2;
-	 wire w, l;
+    wire [2:0] sel1;
+    wire [2:0] sel2;
+    wire w, l;
     FSM FSM_INS(.clk(clk), .rst(rst), .START(START_d), .RESTART(RESTART_d), .decode(decode), .m1(m1), .m2(m2), .m3(m3), .m4(m4), .num1(num1), .num2(num2), .num3(num3), .num4(num4), .valid_output(valid)
-						, .s1(sel1), .s2(sel2), .win(w), .lose(l));
+                , .s1(sel1), .s2(sel2), .win(w), .lose(l));
 
     wire [47:0] numbers;
     number_converter number_converter_INS(.num1(num1), .num2(num2), .num3(num3), .num4(num4), .valid(valid), .numbers(numbers));
-	 
+
     // VGA
     vga vga_INS(.clk_100m(clk), .rst(rst), .numbers_concat(numbers), .vga_hsync(hsync), .vga_vsync(vsync), .vga_r(red), .vga_g(green), .vga_b(blue)
-						, .s1(sel1), .s2(sel2), .win(w), .lose(l));
+                , .s1(sel1), .s2(sel2), .win(w), .lose(l));
 endmodule

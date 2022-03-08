@@ -22,8 +22,8 @@ module psuedo_rand(clk, rst, enable, out);
     input clk, rst;
     input enable;
     output [3:0] out;
-	
-	 reg enabled = 1'b0;
+
+    reg enabled = 1'b0;
     reg [3:0] register=4'b1010;
 
     assign out=register;
@@ -33,11 +33,11 @@ module psuedo_rand(clk, rst, enable, out);
             register <= 4'b1010;
         if (enable && !enabled) begin // only update if enabled to do so
             register <= {register[2:0], ~(register[3] ^ register[2])};
-				enabled <= 1'b1;
-		  end else if (enable == 0) begin
-				enabled <= 1'b0;
-		  end else begin
-		  end
+            enabled <= 1'b1;
+        end else if (enable == 0) begin
+            enabled <= 1'b0;
+        end else begin
+        end
     end
 
 endmodule
